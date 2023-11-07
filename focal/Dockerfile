@@ -24,13 +24,13 @@ ARG ONLOAD_DEBIAN_BASE="ubuntu"
 ARG ONLOAD_DEBIAN_TAG="focal"
 
 # Onload version and its md5sum
-ARG ONLOAD_VERSION="7.1.3.202"
-ARG ONLOAD_MD5SUM="6153f93f03c65b4d091e9247c195b58c"
+ARG ONLOAD_VERSION="8.1.1.17"
+ARG ONLOAD_MD5SUM="d3845b7c35798787de551e09e4272785"
 
 # Onload package URL and legacy URL
 # If ONLOAD_PACKAGE_URL is set, it will download and unzip the tarball from the newer packaging,
 # otherwise it will download the tarball from ONLOAD_LEGACY_URL as before.
-ARG ONLOAD_PACKAGE_URL="https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/7-1-3-202/SF-109585-LS-37-OpenOnload-release-package.zip"
+ARG ONLOAD_PACKAGE_URL="https://www.xilinx.com/content/dam/xilinx/publications/solarflare/onload/openonload/8-1-1-17/SF-109585-LS-42-OpenOnload-Release-Package.zip"
 ARG ONLOAD_LEGACY_URL="https://www.openonload.org/download/openonload-${ONLOAD_VERSION}.tgz"
 
 # When ONLOAD_WITHZF is non-empty, the build includes Solarflare's TCPDirect library.
@@ -87,6 +87,7 @@ RUN \
         util-linux \
         valgrind \
         wget \
+        libcap-dev \
     && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 \
     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10 \
     && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 30 \
