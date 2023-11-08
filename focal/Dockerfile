@@ -27,6 +27,11 @@ ARG ONLOAD_DEBIAN_TAG="focal"
 ARG ONLOAD_VERSION="8.1.1.17"
 ARG ONLOAD_MD5SUM="d3845b7c35798787de551e09e4272785"
 
+# To build from an Onload git repository, set ONLOAD_GIT_REF.
+# Be sure to set the appropriate ONLOAD_VERSION and ONLOAD_USERSPACE_ID for your system.
+ARG ONLOAD_GIT_REF=""
+ARG ONLOAD_GIT_URL="https://github.com/Xilinx-CNS/onload.git"
+
 # Onload package URL and legacy URL
 # If ONLOAD_PACKAGE_URL is set, it will download and unzip the tarball from the newer packaging,
 # otherwise it will download the tarball from ONLOAD_LEGACY_URL as before.
@@ -72,6 +77,7 @@ RUN \
         ethtool \
         g++-10 \
         gcc-10 \
+        git \
         kmod \
         linux-libc-dev \
         libpcap0.8-dev \
@@ -95,7 +101,14 @@ RUN \
     && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 30 \
     && update-alternatives --set c++ /usr/bin/g++ \
     && cd /tmp \
-    && if [ -n "${ONLOAD_PACKAGE_URL}" ] ; then \
+    && if [ -n "${ONLOAD_GIT_REF}" ] ; then \
+          git clone "${ONLOAD_GIT_URL}" "onload-${ONLOAD_VERSION}" \
+          && cd "onload-${ONLOAD_VERSION}" \
+          && git reset --hard "${ONLOAD_GIT_REF}" \
+          && scripts/onload_mkdist \
+          && tar xzf "onload-$(git log -1 --format="%H").tgz" \
+          && cd "onload-$(git log -1 --format="%H")" ; \
+    elif [ -n "${ONLOAD_PACKAGE_URL}" ] ; then \
           curl -fSL "${ONLOAD_PACKAGE_URL}" -o /tmp/onload-${ONLOAD_VERSION}-package.zip \
           && unzip /tmp/onload-${ONLOAD_VERSION}-package.zip \
           && echo "${ONLOAD_MD5SUM} onload-${ONLOAD_VERSION}.tgz" | md5sum --check \
